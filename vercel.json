@@ -1,14 +1,11 @@
 {
-  "functions": {
-    "static/**": {
-      "headers": {
-        "cache-control": "s-maxage=31536000"
-      }
-    }
-  },
   "rewrites": [
     {
-      "source": "/((?!static).*)",
+      "source": "/static/(.*)",
+      "destination": "/static/$1"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/templates/index.html"
     }
   ]
