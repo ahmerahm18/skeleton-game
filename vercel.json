@@ -1,18 +1,22 @@
 {
   "functions": {
-    "app.js": {
-      "runtime": "@vercel/node"
+    "app.py": {
+      "runtime": "@vercel/python"
     }
   },
   "routes": [
     {
-      "src": "/.*",
-      "dest": "templates/index.html"
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/templates/index.html"
     }
   ],
   "headers": [
     {
-      "source": "static/images/(.*)",
+      "source": "/static/images/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
