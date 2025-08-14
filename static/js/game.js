@@ -6,21 +6,21 @@ const resetBtn = document.getElementById('reset');
 
 // List of bones and their target positions.
 const parts = [
-  { name: 'skull', file: 'skull.png',            target: {x: 261, y: 40} },
-  { name: 'ribs left', file: 'ribs left.png',    target: {x: 221, y: 190} },
-  { name: 'ribs right', file: 'ribs right.png',  target: {x: 301, y: 190} },
-  { name: 'spine', file: 'spine.png',            target: {x: 291, y: 200} },
-  { name: 'pelvis left', file: 'pelvis left.png',target: {x: 221, y: 340} },
-  { name: 'pelvis right', file: 'pelvis right.png', target: {x: 301, y: 340} },
-  { name: 'left leg upper', file: 'left leg upper.png', target: {x: 241, y: 420} },
-  { name: 'left leg lower', file: 'left leg lower.png', target: {x: 236, y: 700} },
-  { name: 'right leg upper', file: 'right leg upper.png', target: {x: 331, y: 430} },
-  { name: 'right leg lower', file: 'right leg lower.png', target: {x: 336, y: 700} },
-  { name: 'left arm upper', file: 'left arm upper.png', target: {x: 131, y: 230} },
-  { name: 'left arm lower', file: 'left arm lower.png', target: {x: 121, y: 420} },
+  { name: 'skull', file: 'Skull.png',            target: {x: 261, y: 40} },
+  { name: 'ribs left', file: 'Ribs left.png',    target: {x: 221, y: 190} },
+  { name: 'ribs right', file: 'Ribs right.png',  target: {x: 301, y: 190} },
+  { name: 'spine', file: 'Spine.png',            target: {x: 291, y: 200} },
+  { name: 'pelvis left', file: 'Pelvis left.png',target: {x: 221, y: 340} },
+  { name: 'pelvis right', file: 'Pelvis right.png', target: {x: 301, y: 340} },
+  { name: 'left leg upper', file: 'Left leg upper.png', target: {x: 241, y: 420} },
+  { name: 'left leg lower', file: 'Left leg lower.png', target: {x: 236, y: 700} },
+  { name: 'right leg upper', file: 'Right leg upper.png', target: {x: 331, y: 430} },
+  { name: 'right leg lower', file: 'Right leg lower.png', target: {x: 336, y: 700} },
+  { name: 'left arm upper', file: 'Left arm upper.png', target: {x: 131, y: 230} },
+  { name: 'left arm lower', file: 'Left arm lower.png', target: {x: 121, y: 420} },
 ];
 
-const ASSET_PATH = './static/images/';
+const ASSET_PATH = 'static/images/';
 
 // Load images
 function loadImage(src) {
