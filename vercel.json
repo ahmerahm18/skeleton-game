@@ -1,28 +1,12 @@
 {
-  "functions": {
-    "app.py": {
-      "runtime": "@vercel/python"
-    }
-  },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
+      "source": "/static/(.*)",
+      "destination": "/static/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "/templates/index.html"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/static/images/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
+      "source": "/(.*)",
+      "destination": "/templates/index.html"
     }
   ]
 }
