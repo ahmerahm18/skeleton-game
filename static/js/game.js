@@ -36,7 +36,7 @@ let pieces = [];
 let dragging = null;
 let offsetX = 0;
 let offsetY = 0;
-const SNAP_TOL = 10;
+const SNAP_TOL = 20;
 let flashColor = null;
 let flashUntil = 0;
 
@@ -111,6 +111,7 @@ function draw() {
   for (const p of pieces) {
     ctx.strokeRect(p.target.x, p.target.y, p.img.width, p.img.height);
   }
+  */
 
   // Show tolerance range only for the bone being dragged (with debug info)
   if (dragging) {
@@ -174,7 +175,7 @@ function draw() {
       }
     }
   }
-  */
+  
 }
 
 
