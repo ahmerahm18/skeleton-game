@@ -16,8 +16,8 @@ const parts = [
   { name: 'left leg lower', file: 'Left leg lower.png', target: {x: 215, y: 675} },
   { name: 'right leg upper', file: 'Right leg upper.png', target: {x: 326, y: 425} },
   { name: 'right leg lower', file: 'Right leg lower.png', target: {x: 316, y: 680} },
-  { name: 'left arm upper', file: 'Left arm upper.png', target: {x: 131, y: 230} },
-  { name: 'left arm lower', file: 'Left arm lower.png', target: {x: 121, y: 420} },
+  { name: 'left arm upper', file: 'Left arm upper.png', target: {x: 161, y: 190} },
+  { name: 'left arm lower', file: 'Left arm lower.png', target: {x: 145, y: 370} },
 ];
 
 const ASSET_PATH = 'static/images/';
