@@ -6,16 +6,16 @@ const resetBtn = document.getElementById('reset');
 
 // List of bones and their target positions.
 const parts = [
-  { name: 'skull', file: 'Skull.png',            target: {x: 261, y: 40} },
-  { name: 'ribs left', file: 'Ribs left.png',    target: {x: 221, y: 190} },
+  { name: 'skull', file: 'Skull.png',            target: {x: 261, y: 40,} },
+  { name: 'ribs left', file: 'Ribs left.png',    target: {x: 200, y: 190} },
   { name: 'ribs right', file: 'Ribs right.png',  target: {x: 301, y: 190} },
-  { name: 'spine', file: 'Spine.png',            target: {x: 291, y: 200} },
-  { name: 'pelvis left', file: 'Pelvis left.png',target: {x: 221, y: 340} },
-  { name: 'pelvis right', file: 'Pelvis right.png', target: {x: 301, y: 340} },
-  { name: 'left leg upper', file: 'Left leg upper.png', target: {x: 241, y: 420} },
-  { name: 'left leg lower', file: 'Left leg lower.png', target: {x: 236, y: 700} },
-  { name: 'right leg upper', file: 'Right leg upper.png', target: {x: 331, y: 430} },
-  { name: 'right leg lower', file: 'Right leg lower.png', target: {x: 336, y: 700} },
+  { name: 'spine', file: 'Spine.png',            target: {x: 275, y: 165} },
+  { name: 'pelvis left', file: 'Pelvis left.png',target: {x: 231, y: 340} },
+  { name: 'pelvis right', file: 'Pelvis right.png', target: {x: 311, y: 340} },
+  { name: 'left leg upper', file: 'Left leg upper.png', target: {x: 218, y: 412} },
+  { name: 'left leg lower', file: 'Left leg lower.png', target: {x: 215, y: 675} },
+  { name: 'right leg upper', file: 'Right leg upper.png', target: {x: 326, y: 425} },
+  { name: 'right leg lower', file: 'Right leg lower.png', target: {x: 316, y: 680} },
   { name: 'left arm upper', file: 'Left arm upper.png', target: {x: 131, y: 230} },
   { name: 'left arm lower', file: 'Left arm lower.png', target: {x: 121, y: 420} },
 ];
@@ -36,29 +36,50 @@ let pieces = [];
 let dragging = null;
 let offsetX = 0;
 let offsetY = 0;
-const SNAP_TOL = 28;
+const SNAP_TOL = 10;
 let flashColor = null;
 let flashUntil = 0;
 
 async function init() {
   const loaded = await Promise.all(parts.map(async p => ({...p, img: await loadImage(p.file)})));
+
   // Scatter initial positions around the edges
   pieces = loaded.map((p, i) => {
-    const side = i % 4;
+    const maxX = canvas.width - p.img.width;
+    const maxY = canvas.height - p.img.height;
+
+    // Choose random edge with some randomness
+    const side = Math.floor(Math.random() * 4);
     let x, y;
+
     switch (side) {
-      case 0: x = 20; y = 30 + i*30; break;
-      case 1: x = canvas.width - p.img.width - 20; y = 20 + i*20; break;
-      case 2: x = 40 + (i*15)%200; y = canvas.height - p.img.height - 40; break;
-      default: x = 20 + (i*25)%220; y = 20; break;
+      case 0: // Left side
+        x = Math.random() * 80; // Within 80 pixels of left edge
+        y = Math.random() * maxY;
+        break;
+      case 1: // Right side
+        x = maxX - Math.random() * 80; // Within 80 pixels of right edge
+        y = Math.random() * maxY;
+        break;
+      case 2: // Top side
+        x = Math.random() * maxX;
+        y = Math.random() * 80; // Within 80 pixels of top edge
+        break;
+      case 3: // Bottom side
+        x = Math.random() * maxX;
+        y = maxY - Math.random() * 80; // Within 80 pixels of bottom edge
+        break;
     }
-    return { ...p, x, y, placed: false };
+
+    return { ...p, x: Math.max(0, x), y: Math.max(0, y), placed: false };
   });
+
   loop();
 }
 
 function draw() {
   ctx.clearRect(0,0,canvas.width, canvas.height);
+
   // background
   ctx.fillStyle = '#2a1e1a';
   ctx.fillRect(0,0,canvas.width, canvas.height);
@@ -82,7 +103,81 @@ function draw() {
   // Status
   const done = pieces.filter(p=>p.placed).length;
   statusEl.textContent = done === pieces.length ? 'All bones placed! 🥳' : `Placed: ${done}/${pieces.length}`;
+
+  /*
+  // Show target boxes (for debugging)
+  ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)'; // semi-transparent green
+  ctx.lineWidth = 2;
+  for (const p of pieces) {
+    ctx.strokeRect(p.target.x, p.target.y, p.img.width, p.img.height);
+  }
+  
+
+  // Show tolerance range only for the bone being dragged (with debug info)
+  if (dragging) {
+    const tol = dragging.target.tolerance || SNAP_TOL;
+    
+    // Calculate tolerance box bounds
+    const tolLeft = dragging.target.x - tol;
+    const tolTop = dragging.target.y - tol;
+    const tolRight = dragging.target.x + dragging.img.width + tol;
+    const tolBottom = dragging.target.y + dragging.img.height + tol;
+    
+    // Debug: log the values (remove this after testing)
+    console.log(`Canvas: ${canvas.width}x${canvas.height}`);
+    console.log(`Tolerance box: ${tolLeft}, ${tolTop}, ${tolRight}, ${tolBottom}`);
+    console.log(`Going outside? Left: ${tolLeft < 0}, Top: ${tolTop < 0}, Right: ${tolRight > canvas.width}, Bottom: ${tolBottom > canvas.height}`);
+    console.log(`Image size: ${dragging.img.width}x${dragging.img.height}`);
+    console.log(`Tolerance value: ${tol}`);
+    console.log(`Target position: ${dragging.target.x}, ${dragging.target.y}`);
+    
+    // Only draw parts that are within canvas bounds
+    if (tolRight > 0 && tolLeft < canvas.width && tolBottom > 0 && tolTop < canvas.height) {
+      const drawLeft = Math.max(0, tolLeft);
+      const drawTop = Math.max(0, tolTop);
+      const drawRight = Math.min(canvas.width, tolRight);
+      const drawBottom = Math.min(canvas.height, tolBottom);
+      
+      ctx.strokeStyle = 'rgba(0, 0, 255, 0.8)'; // Made more opaque to see better
+      ctx.lineWidth = 2;
+      
+      // Draw as separate lines to be more explicit
+      if (drawTop === tolTop && drawLeft < drawRight) {
+        // Top line
+        ctx.beginPath();
+        ctx.moveTo(drawLeft, drawTop);
+        ctx.lineTo(drawRight, drawTop);
+        ctx.stroke();
+      }
+      
+      if (drawBottom === tolBottom && drawLeft < drawRight) {
+        // Bottom line
+        ctx.beginPath();
+        ctx.moveTo(drawLeft, drawBottom);
+        ctx.lineTo(drawRight, drawBottom);
+        ctx.stroke();
+      }
+      
+      if (drawLeft === tolLeft && drawTop < drawBottom) {
+        // Left line
+        ctx.beginPath();
+        ctx.moveTo(drawLeft, drawTop);
+        ctx.lineTo(drawLeft, drawBottom);
+        ctx.stroke();
+      }
+      
+      if (drawRight === tolRight && drawTop < drawBottom) {
+        // Right line
+        ctx.beginPath();
+        ctx.moveTo(drawRight, drawTop);
+        ctx.lineTo(drawRight, drawBottom);
+        ctx.stroke();
+      }
+    }
+  }
+  */
 }
+
 
 function setFlash(ok) {
   flashColor = ok ? '#00ff55' : '#ff0033';
@@ -137,11 +232,17 @@ function onUp() {
   if (!dragging) return;
   const p = dragging;
   dragging = null;
-  // Check snap
-  const dx = (p.x - p.target.x);
-  const dy = (p.y - p.target.y);
-  const dist = Math.hypot(dx, dy);
-  if (dist <= SNAP_TOL) {
+
+  // per-part tolerance (falls back to SNAP_TOL if not set)
+  const tolX = p.target.toleranceX ?? p.target.tolerance ?? SNAP_TOL;
+  const tolY = p.target.toleranceY ?? p.target.tolerance ?? SNAP_TOL;
+
+  // square/rectangular check instead of circular distance
+  const within =
+    Math.abs(p.x - p.target.x) <= tolX &&
+    Math.abs(p.y - p.target.y) <= tolY;
+
+  if (within) {
     p.x = p.target.x;
     p.y = p.target.y;
     p.placed = true;
