@@ -111,6 +111,7 @@ function draw() {
   for (const p of pieces) {
     ctx.strokeRect(p.target.x, p.target.y, p.img.width, p.img.height);
   }
+  */
   
 
   // Show tolerance range only for the bone being dragged (with debug info)
@@ -175,7 +176,7 @@ function draw() {
       }
     }
   }
-  */
+  
 }
 
 
